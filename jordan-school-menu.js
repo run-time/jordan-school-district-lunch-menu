@@ -40,7 +40,7 @@ class JordanSchoolMenu extends HTMLElement {
                 }
 
                 .meal-section {
-                    margin: 20px 0;
+                    margin: 0;
                 }
 
                 .meal-section h3 {
@@ -70,8 +70,8 @@ class JordanSchoolMenu extends HTMLElement {
 
                 hr {
                     border: none;
-                    border-top: 1px solid #ddd;
-                    margin: 10px 0;
+                    border-top: 2px solid #dadada;
+                    margin: 0;
                 }
             </style>
             
