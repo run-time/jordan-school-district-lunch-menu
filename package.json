@@ -1,0 +1,13 @@
+{
+  "name": "school-menu-app",
+  "version": "1.0.0",
+  "description": "School menu API for Rosamond Elementary",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "vercel dev",
+    "build": "echo 'No build needed for static site'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

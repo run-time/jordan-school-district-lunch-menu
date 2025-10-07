@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Menu Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .menu-item {
+      background: #f4f4f4;
+      padding: 0 14px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border-left: 4px solid #368dda;
+      white-space: pre-line;
+      /* Preserve line breaks */
+    }
+
+    .menu-item h3 {
+      margin: 0;
+      /* No margins at all */
+      font-size: 1.2em;
+      line-height: 1;
+      /* Reduce line height for tighter spacing */
+    }
+
+    .menu-item p {
+      margin: -12px 0 0 25px;
+      line-height: 1.4;
+    }
+
+    .loading {
+      color: #666;
+      font-style: italic;
+    }
+
+    .error {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+
+    button {
+      background: #007cba;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #005a8a;
+    }
+  </style>
+</head>
+
+<body>
+  <p id="currentDate"></p>
+
+  <div id="menuDisplay">
+    <div class="menu-item">
+      <h3>🍳 Breakfast</h3>
+      <p id="breakfast" class="loading">Click "Get Today's Menu" to load...</p>
+      <hr>
+      <h3>🍕 Lunch</h3>
+      <p id="lunch" class="loading">Click "Get Today's Menu" to load...</p>
+    </div>
+  </div>
+
+  <script src="school-menu-server.js"></script>
+  <script>
+    // Display current date in nice format
+    const today = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('currentDate').textContent = `School Menu for ${today.toLocaleDateString('en-US', options)}`;
+
+    async function loadMenu() {
+      // Show loading state
+      document.getElementById('breakfast').textContent = 'Loading real menu data...';
+      document.getElementById('lunch').textContent = 'Loading real menu data...';
+      document.getElementById('breakfast').className = 'loading';
+      document.getElementById('lunch').className = 'loading';
+
+      try {
+        // Get REAL menu data only - no fallbacks
+        const menu = await getSchoolFoodForToday();
+
+        // Update display with real data
+        document.getElementById('breakfast').textContent = menu.breakfast;
+        document.getElementById('lunch').textContent = menu.lunch;
+        document.getElementById('breakfast').className = '';
+        document.getElementById('lunch').className = '';
+
+        // Log success
+        console.log('✅ Successfully loaded REAL menu data:', menu);
+
+      } catch (error) {
+        console.error('❌ Failed to load real menu data:', error.message);
+
+        // Show error message - no fallbacks
+        document.getElementById('breakfast').textContent = `Error: ${error.message}`;
+        document.getElementById('lunch').textContent = `Error: ${error.message}`;
+        document.getElementById('breakfast').className = 'error';
+        document.getElementById('lunch').className = 'error';
+      }
+    }
+
+    // Auto-load menu on page load
+    loadMenu();
+  </script>
+</body>
+
+</html>
