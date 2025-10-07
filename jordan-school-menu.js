@@ -47,14 +47,14 @@ class JordanSchoolMenu extends HTMLElement {
                     margin: 0;
                     font-size: 1.2em;
                     line-height: 1;
-                    padding: 15px 0 5px 0;
+                    padding: 14px 0 6px 0;
                     color: #333;
                 }
 
                 .meal-content {
-                    margin: -12px 0 0 25px;
+                    margin: 8px 0 0 24px;
                     line-height: 1.4;
-                    padding-bottom: 15px;
+                    padding-bottom: 12px;
                     white-space: pre-line;
                 }
 
