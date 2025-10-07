@@ -155,8 +155,8 @@ class JordanSchoolMenu extends HTMLElement {
         try {
             console.log(`Jordan School Menu: Fetching real menu data for ${dateStr}...`);
             
-            // Determine the base URL (works for both localhost and production)
-            const baseUrl = window.location.origin;
+            // Use the correct Vercel API endpoint regardless of where the component is hosted
+            const baseUrl = 'https://jordan-school-district-lunch-menu.vercel.app';
             
             // Call Vercel API routes
             const [breakfastResponse, lunchResponse] = await Promise.all([
