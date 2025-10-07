@@ -1,9 +1,6 @@
 {
-  "functions": {
-    "api/menu.js": {
-      "runtime": "@vercel/node@18.x"
-    }
-  },
+  "buildCommand": "echo 'No build needed'",
+  "outputDirectory": ".",
   "rewrites": [
     {
       "source": "/api/menu",
