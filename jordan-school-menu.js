@@ -58,8 +58,12 @@ class JordanSchoolMenu extends HTMLElement {
                     white-space: pre-line;
                 }
 
-                .meal-content br {
+                .menu-section {
                     margin-bottom: 0.5em;
+                }
+
+                .menu-section:last-child {
+                    margin-bottom: 0;
                 }
 
                 .loading {
@@ -258,17 +262,15 @@ class JordanSchoolMenu extends HTMLElement {
         let result = '';
         
         if (sections.option1.length > 0) {
-            result += `<b>Option 1</b>: ${sections.option1.join(', ')}`;
+            result += `<div class="menu-section"><b>Option 1</b>: ${sections.option1.join(', ')}</div>`;
         }
         
         if (sections.option2.length > 0) {
-            if (result) result += '<br>';
-            result += `<b>Option 2</b>: ${sections.option2.join(', ')}`;
+            result += `<div class="menu-section"><b>Option 2</b>: ${sections.option2.join(', ')}</div>`;
         }
         
         if (sections.sides.length > 0) {
-            if (result) result += '<br>';
-            result += `<b>Sides</b>: ${sections.sides.map(side => `${side}`).join(', ')}`;
+            result += `<div class="menu-section"><b>Sides</b>: ${sections.sides.map(side => `${side}`).join(', ')}</div>`;
         }
         
         // If no structured data found, fall back to simple list
