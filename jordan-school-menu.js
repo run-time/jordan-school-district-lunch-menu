@@ -121,8 +121,8 @@ class JordanSchoolMenu extends HTMLElement {
             const menu = await this.getSchoolFoodForToday();
 
             // Update display with real data
-            breakfastElement.textContent = menu.breakfast;
-            lunchElement.textContent = menu.lunch;
+            breakfastElement.innerHTML = menu.breakfast;
+            lunchElement.innerHTML = menu.lunch;
             breakfastElement.className = 'meal-content';
             lunchElement.className = 'meal-content';
 
