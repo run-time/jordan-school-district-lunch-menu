@@ -9,6 +9,9 @@ class JordanSchoolMenu extends HTMLElement {
     constructor() {
         super();
         
+        // State to track if we're showing today or tomorrow's menu
+        this.showingToday = true;
+        
         // Create shadow DOM for encapsulation
         this.attachShadow({ mode: 'open' });
         
@@ -29,6 +32,20 @@ class JordanSchoolMenu extends HTMLElement {
                     font-weight: bold;
                     margin-bottom: 20px;
                     color: #333;
+                    cursor: pointer;
+                    padding: 10px;
+                    border-radius: 8px;
+                    transition: background-color 0.2s ease, transform 0.1s ease;
+                    user-select: none;
+                }
+
+                .current-date:hover {
+                    background-color: #f0f7ff;
+                    transform: translateY(-1px);
+                }
+
+                .current-date:active {
+                    transform: translateY(0);
                 }
 
                 .menu-container {
@@ -105,13 +122,35 @@ class JordanSchoolMenu extends HTMLElement {
         // Component is attached to DOM, initialize it
         this.displayCurrentDate();
         this.loadMenu();
+        
+        // Add click event listener to date header for toggling
+        const dateElement = this.shadowRoot.getElementById('currentDate');
+        dateElement.addEventListener('click', () => {
+            this.toggleDayView();
+        });
+    }
+    
+    /**
+     * Toggle between showing today's and tomorrow's menu
+     */
+    toggleDayView() {
+        // Toggle the state
+        this.showingToday = !this.showingToday;
+        
+        // Update the date display
+        this.displayCurrentDate();
+        
+        // Reload the menu for the new date
+        this.loadMenu();
     }
     
     displayCurrentDate() {
         const today = new Date();
+        const targetDate = this.showingToday ? today : new Date(today.getTime() + 24 * 60 * 60 * 1000);
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const dayLabel = this.showingToday ? 'TODAY' : 'TOMORROW';
         const dateElement = this.shadowRoot.getElementById('currentDate');
-        dateElement.textContent = `School Menu for ${today.toLocaleDateString('en-US', options)}`;
+        dateElement.textContent = `School Menu for ${dayLabel} - ${targetDate.toLocaleDateString('en-US', options)}`;
     }
     
     async loadMenu() {
@@ -125,8 +164,11 @@ class JordanSchoolMenu extends HTMLElement {
         lunchElement.className = 'meal-content loading';
 
         try {
-            // Get REAL menu data
-            const menu = await this.getSchoolFoodForToday();
+            // Get date for menu (today or tomorrow)
+            const targetDate = this.showingToday ? new Date() : new Date(Date.now() + 24 * 60 * 60 * 1000);
+            
+            // Get REAL menu data for the target date
+            const menu = await this.getSchoolFoodForDate(targetDate);
 
             // Update display with real data
             breakfastElement.innerHTML = menu.breakfast;
@@ -150,14 +192,13 @@ class JordanSchoolMenu extends HTMLElement {
     }
     
     /**
-     * Get school food menu for today from Rosamond Elementary School
+     * Get school food menu for a specific date from Rosamond Elementary School
      * Uses the Vercel API to bypass CORS restrictions
      */
-    async getSchoolFoodForToday() {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
+    async getSchoolFoodForDate(targetDate = new Date()) {
+        const year = targetDate.getFullYear();
+        const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+        const day = String(targetDate.getDate()).padStart(2, '0');
         const dateStr = `${year}-${month}-${day}`;
         
         try {
