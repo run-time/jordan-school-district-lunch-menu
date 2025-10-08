@@ -106,9 +106,9 @@ class JordanSchoolMenu extends HTMLElement {
                     <h3>🍳 Breakfast</h3>
                     <div class="meal-content loading" id="breakfast">Loading menu...</div>
                 </div>
-                
-                <hr>
-                
+            </div>
+            
+            <div class="menu-container">
                 <div class="meal-section">
                     <h3>🍕 Lunch</h3>
                     <div class="meal-content loading" id="lunch">Loading menu...</div>
