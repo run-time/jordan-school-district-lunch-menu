@@ -41,7 +41,6 @@ class JordanSchoolMenu extends HTMLElement {
 
                 .current-date:hover {
                     background-color: #f0f7ff;
-                    transform: translateY(-1px);
                 }
 
                 .current-date:active {
