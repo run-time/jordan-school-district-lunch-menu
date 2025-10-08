@@ -58,6 +58,10 @@ class JordanSchoolMenu extends HTMLElement {
                     white-space: pre-line;
                 }
 
+                .meal-content br {
+                    margin-bottom: 0.5em;
+                }
+
                 .loading {
                     color: #666;
                     font-style: italic;
@@ -258,12 +262,12 @@ class JordanSchoolMenu extends HTMLElement {
         }
         
         if (sections.option2.length > 0) {
-            if (result) result += '\n';
+            if (result) result += '<br>';
             result += `<b>Option 2</b>: ${sections.option2.join(', ')}`;
         }
         
         if (sections.sides.length > 0) {
-            if (result) result += '\n';
+            if (result) result += '<br>';
             result += `<b>Sides</b>: ${sections.sides.map(side => `${side}`).join(', ')}`;
         }
         
