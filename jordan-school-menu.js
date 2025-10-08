@@ -18,7 +18,7 @@ class JordanSchoolMenu extends HTMLElement {
                 :host {
                     display: block;
                     font-family: Arial, sans-serif;
-                    max-width: 800px;
+                    max-width: 600px;
                     margin: 0 auto;
                     padding: 20px;
                     line-height: 1.6;
@@ -240,6 +240,8 @@ class JordanSchoolMenu extends HTMLElement {
                 let foodName = item.food.name.trim();
                 // Clean up the food name by removing ", WG" (case insensitive)
                 foodName = foodName.replace(/,\s*WG\b/gi, '');
+                // also remove (El)
+                foodName = foodName.replace(/\s*\(El\)\s*/gi, '');
                 if (foodName && currentSection) {
                     sections[currentSection].push(foodName);
                 }
