@@ -242,6 +242,8 @@ class JordanSchoolMenu extends HTMLElement {
                 foodName = foodName.replace(/,\s*WG\b/gi, '');
                 // also remove (El)
                 foodName = foodName.replace(/\s*\(El\)\s*/gi, '');
+                // strip commas from single food items
+                foodName = foodName.replace(/,/g, '');
                 if (foodName && currentSection) {
                     sections[currentSection].push(foodName);
                 }
@@ -252,17 +254,17 @@ class JordanSchoolMenu extends HTMLElement {
         let result = '';
         
         if (sections.option1.length > 0) {
-            result += `Option 1: ${sections.option1.join(' and ')}`;
+            result += `<b>Option 1</b>: ${sections.option1.join(', ')}`;
         }
         
         if (sections.option2.length > 0) {
             if (result) result += '\n';
-            result += `Option 2: ${sections.option2.join(' and ')}`;
+            result += `<b>Option 2</b>: ${sections.option2.join(', ')}`;
         }
         
         if (sections.sides.length > 0) {
             if (result) result += '\n';
-            result += `Sides: ${sections.sides.map(side => `${side}`).join(', ')}`;
+            result += `<b>Sides</b>: ${sections.sides.map(side => `${side}`).join(', ')}`;
         }
         
         // If no structured data found, fall back to simple list
