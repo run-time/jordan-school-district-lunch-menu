@@ -129,6 +129,7 @@ class JordanSchoolMenu extends HTMLElement {
     
     connectedCallback() {
         // Component is attached to DOM, initialize it
+        this.cleanupExpiredCache(); // Clean up old cache entries
         this.displayCurrentDate();
         this.loadMenu();
         
@@ -260,14 +261,100 @@ class JordanSchoolMenu extends HTMLElement {
     }
     
     /**
+     * Save menu data to localStorage with expiration
+     */
+    saveMenuToCache(dateStr, menuData) {
+        try {
+            const cacheKey = `jordan-menu-${dateStr}`;
+            const cacheData = {
+                data: menuData,
+                timestamp: Date.now(),
+                expires: Date.now() + (24 * 60 * 60 * 1000) // Cache for 24 hours
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+            console.log(`📦 Jordan School Menu: Cached menu data for ${dateStr}`);
+        } catch (error) {
+            console.warn('⚠️ Jordan School Menu: Failed to cache menu data:', error);
+        }
+    }
+    
+    /**
+     * Retrieve menu data from localStorage if not expired
+     */
+    getMenuFromCache(dateStr) {
+        try {
+            const cacheKey = `jordan-menu-${dateStr}`;
+            const cached = localStorage.getItem(cacheKey);
+            
+            if (!cached) {
+                return null;
+            }
+            
+            const cacheData = JSON.parse(cached);
+            
+            // Check if cache has expired
+            if (Date.now() > cacheData.expires) {
+                localStorage.removeItem(cacheKey);
+                console.log(`🗑️ Jordan School Menu: Expired cache removed for ${dateStr}`);
+                return null;
+            }
+            
+            console.log(`💾 Jordan School Menu: Using cached menu data for ${dateStr}`);
+            return cacheData.data;
+        } catch (error) {
+            console.warn('⚠️ Jordan School Menu: Failed to retrieve cached menu data:', error);
+            return null;
+        }
+    }
+    
+    /**
+     * Clean up expired cache entries from localStorage
+     */
+    cleanupExpiredCache() {
+        try {
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('jordan-menu-')) {
+                    try {
+                        const cached = localStorage.getItem(key);
+                        if (cached) {
+                            const cacheData = JSON.parse(cached);
+                            if (Date.now() > cacheData.expires) {
+                                keysToRemove.push(key);
+                            }
+                        }
+                    } catch (e) {
+                        // Invalid cache entry, mark for removal
+                        keysToRemove.push(key);
+                    }
+                }
+            }
+            
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+            if (keysToRemove.length > 0) {
+                console.log(`🧹 Jordan School Menu: Cleaned up ${keysToRemove.length} expired cache entries`);
+            }
+        } catch (error) {
+            console.warn('⚠️ Jordan School Menu: Failed to cleanup expired cache:', error);
+        }
+    }
+    
+    /**
      * Get school food menu for a specific date from Rosamond Elementary School
-     * Uses the Vercel API to bypass CORS restrictions
+     * Uses localStorage caching first, then falls back to Vercel API
      */
     async getSchoolFoodForDate(targetDate = new Date()) {
         const year = targetDate.getFullYear();
         const month = String(targetDate.getMonth() + 1).padStart(2, '0');
         const day = String(targetDate.getDate()).padStart(2, '0');
         const dateStr = `${year}-${month}-${day}`;
+        
+        // Check cache first
+        const cachedMenu = this.getMenuFromCache(dateStr);
+        if (cachedMenu) {
+            return cachedMenu;
+        }
         
         try {
             console.log(`Jordan School Menu: Fetching real menu data for ${dateStr}...`);
@@ -301,10 +388,15 @@ class JordanSchoolMenu extends HTMLElement {
             const breakfastMenu = this.findTodaysMenu(breakfastData, todayDate);
             const lunchMenu = this.findTodaysMenu(lunchData, todayDate);
             
-            return {
+            const menuData = {
                 breakfast: this.formatMenuItems(breakfastMenu),
                 lunch: this.formatMenuItems(lunchMenu)
             };
+            
+            // Save to cache for future use
+            this.saveMenuToCache(dateStr, menuData);
+            
+            return menuData;
             
         } catch (error) {
             console.error('❌ Jordan School Menu: Failed to fetch real menu data:', error);
