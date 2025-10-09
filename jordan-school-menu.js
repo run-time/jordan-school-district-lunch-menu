@@ -21,10 +21,20 @@ class JordanSchoolMenu extends HTMLElement {
                 :host {
                     display: block;
                     font-family: Arial, sans-serif;
-                    max-width: 600px;
+                    width: 50vw;
+                    height: 90vh;
+                    overflow-y: auto;
                     margin: 0 auto;
                     padding: 20px;
                     line-height: 1.6;
+                }
+
+                @media (max-width: 600px) {
+                    :host {
+                        width: 90vw;
+                        height: 90vh;
+                        padding: 10px;
+                    }
                 }
 
                 .current-date {
