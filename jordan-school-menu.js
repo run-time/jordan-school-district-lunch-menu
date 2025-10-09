@@ -22,7 +22,7 @@ class JordanSchoolMenu extends HTMLElement {
                     display: block;
                     font-family: Arial, sans-serif;
                     width: 50vw;
-                    height: 90vh;
+                    height: 80vh;
                     overflow-y: auto;
                     margin: 0 auto;
                     padding: 20px;
@@ -31,8 +31,8 @@ class JordanSchoolMenu extends HTMLElement {
 
                 @media (max-width: 600px) {
                     :host {
-                        width: 90vw;
-                        height: 90vh;
+                        width: 80vw;
+                        height: 80vh;
                         padding: 10px;
                     }
                 }
@@ -155,9 +155,41 @@ class JordanSchoolMenu extends HTMLElement {
     
     displayCurrentDate() {
         const today = new Date();
-        const targetDate = this.showingToday ? today : new Date(today.getTime() + 24 * 60 * 60 * 1000);
+        const todayDayOfWeek = today.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
+        let targetDate;
+        let dayLabel;
+        
+        if (this.showingToday) {
+            // Handle weekends for "today" view
+            if (todayDayOfWeek === 0 || todayDayOfWeek === 6) {
+                // Saturday (6) or Sunday (0) - show next Monday
+                const daysUntilMonday = todayDayOfWeek === 0 ? 1 : 2; // Sunday->1 day, Saturday->2 days
+                targetDate = new Date(today.getTime() + daysUntilMonday * 24 * 60 * 60 * 1000);
+                dayLabel = 'NEXT MONDAY';
+            } else {
+                // Weekday - show actual today
+                targetDate = today;
+                dayLabel = 'TODAY';
+            }
+        } else {
+            // Handle "tomorrow" view
+            if (todayDayOfWeek === 0 || todayDayOfWeek === 6) {
+                // Saturday (6) or Sunday (0) - show next Tuesday
+                const daysUntilTuesday = todayDayOfWeek === 0 ? 2 : 3; // Sunday->2 days, Saturday->3 days
+                targetDate = new Date(today.getTime() + daysUntilTuesday * 24 * 60 * 60 * 1000);
+                dayLabel = 'NEXT TUESDAY';
+            } else if (todayDayOfWeek === 5) {
+                // Friday - show next Monday
+                targetDate = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+                dayLabel = 'NEXT MONDAY';
+            } else {
+                // Monday-Thursday - show actual tomorrow
+                targetDate = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+                dayLabel = 'TOMORROW';
+            }
+        }
+        
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const dayLabel = this.showingToday ? 'TODAY' : 'TOMORROW';
         const dateElement = this.shadowRoot.getElementById('currentDate');
         dateElement.textContent = `School Menu for ${dayLabel} - ${targetDate.toLocaleDateString('en-US', options)}`;
     }
@@ -173,8 +205,35 @@ class JordanSchoolMenu extends HTMLElement {
         lunchElement.className = 'meal-content loading';
 
         try {
-            // Get date for menu (today or tomorrow)
-            const targetDate = this.showingToday ? new Date() : new Date(Date.now() + 24 * 60 * 60 * 1000);
+            // Get date for menu (today or next school day)
+            const today = new Date();
+            const todayDayOfWeek = today.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
+            let targetDate;
+            
+            if (this.showingToday) {
+                // Handle weekends for "today" view
+                if (todayDayOfWeek === 0 || todayDayOfWeek === 6) {
+                    // Saturday (6) or Sunday (0) - show next Monday
+                    const daysUntilMonday = todayDayOfWeek === 0 ? 1 : 2; // Sunday->1 day, Saturday->2 days
+                    targetDate = new Date(today.getTime() + daysUntilMonday * 24 * 60 * 60 * 1000);
+                } else {
+                    // Weekday - show actual today
+                    targetDate = today;
+                }
+            } else {
+                // Handle "tomorrow" view
+                if (todayDayOfWeek === 0 || todayDayOfWeek === 6) {
+                    // Saturday (6) or Sunday (0) - show next Tuesday
+                    const daysUntilTuesday = todayDayOfWeek === 0 ? 2 : 3; // Sunday->2 days, Saturday->3 days
+                    targetDate = new Date(today.getTime() + daysUntilTuesday * 24 * 60 * 60 * 1000);
+                } else if (todayDayOfWeek === 5) {
+                    // Friday - show next Monday
+                    targetDate = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+                } else {
+                    // Monday-Thursday - show actual tomorrow
+                    targetDate = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+                }
+            }
             
             // Get REAL menu data for the target date
             const menu = await this.getSchoolFoodForDate(targetDate);
