@@ -21,8 +21,6 @@ class JordanSchoolMenu extends HTMLElement {
                 :host {
                     display: block;
                     font-family: Arial, sans-serif;
-                    width: 50vw;
-                    height: 80vh;
                     overflow-y: auto;
                     margin: 0 auto;
                     padding: 20px;
